@@ -1,4 +1,16 @@
+
+# configuracion para error de sonarqube en linux
+
 $ sudo vi /etc/sysctl.conf
 vm.max_map_count=262144
 
 $ sysctl -w vm.max_map_count=262144
+
+
+# Comando para compilar y subir analisis
+
+mvn clean verify sonar:sonar   
+-Dsonar.projectKey=hola-sonar   
+-Dsonar.host.url=http://0.0.0.0:9000   
+-Dsonar.login=sqp_9035a84c3f67738727c5fc42a87a0a3f3aa7987f
+

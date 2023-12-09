@@ -1,0 +1,68 @@
+pipeline {
+    agent {
+        label 'agent1'
+    }
+    
+    environment {
+        MAVEN_HOME = tool 'm3'
+        registry = "mauron/microjk"
+        registryCredential = 'mauron'
+        dockerImage = ''
+    }
+
+    stages {
+        
+        stage('Clonar Repositorio') {
+            steps {
+                script {
+         
+                  def gitLabRepositoryUrl = 'https://gitlab.com/macastil/demo.git'
+    
+                  git(
+                    url: gitLabRepositoryUrl,
+                    branch: 'master',
+                    credentialsId: 'gitlab-token'
+                  )
+                }
+            }
+        }
+
+        stage('Compilar con Maven') {
+            steps {
+                script {
+                    // Utiliza Maven para compilar el proyecto
+                    sh "${MAVEN_HOME}/bin/mvn clean package -DskipTests"
+                }
+            }
+        }
+
+        stage('Análisis SonarQube') {
+            steps {
+                script {
+                    // Configura las propiedades de SonarQube en Jenkins
+                    withSonarQubeEnv('sonarqube') {
+                        // Ejecuta el análisis de SonarQube
+                        sh "${MAVEN_HOME}/bin/mvn sonar:sonar"
+                    }
+                }
+            }
+        }
+        
+        stage('Construir y Publicar Imagen Docker') {
+            steps {
+                script {
+                  dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                 
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Puedes agregar acciones que se ejecuten siempre, como la limpieza de recursos
+            cleanWs()
+        }
+    }
+}
+

@@ -1,13 +1,13 @@
 pipeline {
     agent {
-        label 'agent1'
+        label 'slave'
     }
-    
+
     environment {
         MAVEN_HOME = tool 'm3'
-        registry = "mauron/microjk"
-        registryCredential = 'mauron'
         dockerImage = ''
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        REGISTRY='mauron'
     }
 
     stages {
@@ -30,7 +30,6 @@ pipeline {
         stage('Compilar con Maven') {
             steps {
                 script {
-                    // Utiliza Maven para compilar el proyecto
                     sh "${MAVEN_HOME}/bin/mvn clean package -DskipTests"
                 }
             }
@@ -39,9 +38,7 @@ pipeline {
         stage('Análisis SonarQube') {
             steps {
                 script {
-                    // Configura las propiedades de SonarQube en Jenkins
-                    withSonarQubeEnv('sonarqube') {
-                        // Ejecuta el análisis de SonarQube
+                    withSonarQubeEnv('sonar') {
                         sh "${MAVEN_HOME}/bin/mvn sonar:sonar"
                     }
                 }
@@ -51,11 +48,15 @@ pipeline {
         stage('Construir y Publicar Imagen Docker') {
             steps {
                 script {
-                  dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                  sh 'docker build . -t $REGISTRY/demo:$BUILD_ID'
+                  sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                  sh 'docker push $REGISTRY/demo:$BUILD_ID'
                  
                 }
             }
         }
+        
+  
     }
 
     post {

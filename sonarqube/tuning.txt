@@ -15,8 +15,6 @@ mvn clean verify sonar:sonar
 -Dsonar.login=sqp_9035a84c3f67738727c5fc42a87a0a3f3aa7987f
 
 
-http://172.174.206.231:9000
-admin/devops2023
-sonar_token: squ_f605913d512b7ebb2db08003cf711be2387fd242
+
 
 

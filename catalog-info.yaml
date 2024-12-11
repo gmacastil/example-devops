@@ -1,19 +1,37 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
+  name: example-devops
+  description: Repositorio para la automatización de procesos DevOps utilizando Jenkins, Azure Pipelines y SonarQube
   annotations:
     backstage.io/techdocs-ref: dir:.
     github.com/project-slug: gmacastil/example-devops
     sonarqube.org/project-key: example-devops
-  description: Repositorio para la automatización de procesos DevOps utilizando Jenkins,
-    Azure Pipelines y SonarQube
-  name: example-devops
   tags:
-  - jenkins
-  - azurepipelines
-  - sonarqube
+    - jenkins
+    - azurepipelines
+    - sonarqube
 spec:
-  lifecycle: production
-  owner: gmacastil
-  system: dummy
   type: service
+  owner: gmacastil
+  lifecycle: production
+  system: discovery
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: example-devops-api
+  description: Repositorio para la automatización de procesos DevOps utilizando Jenkins, Azure Pipelines y SonarQube
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  tags:
+    - jenkins
+    - azurepipelines
+    - sonarqube
+spec:
+  type: openapi
+  owner: gmacastil
+  lifecycle: production
+  system: discovery
+  definition: 
+    $text: /docs/openapi.yaml
